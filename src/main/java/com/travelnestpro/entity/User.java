@@ -53,8 +53,20 @@ public class User {
 
     private String status;
 
+    @Column(name = "is_verified", nullable = false)
+    private boolean isVerified = false;
+
+    @Column(name = "is_approved", nullable = false)
+    private boolean isApproved = false;
+
+    @Column(name = "onboarding_completed", nullable = false)
+    private boolean onboardingCompleted = false;
+
     @Column(name = "auth_provider")
     private String authProvider;
+
+    @Column(name = "is_new")
+    private Boolean isNew;
 
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -174,12 +186,64 @@ public class User {
         this.status = status;
     }
 
+    public boolean isVerified() {
+        return isVerified || isApproved || "APPROVED".equalsIgnoreCase(status);
+    }
+
+    public boolean getIsVerified() {
+        return isVerified || isApproved || "APPROVED".equalsIgnoreCase(status);
+    }
+
+    public void setVerified(boolean verified) {
+        isVerified = verified;
+    }
+
+    public void setIsVerified(boolean verified) {
+        isVerified = verified;
+    }
+
+    public boolean isApproved() {
+        return isApproved || "APPROVED".equalsIgnoreCase(status);
+    }
+
+    public boolean getIsApproved() {
+        return isApproved || "APPROVED".equalsIgnoreCase(status);
+    }
+
+    public void setApproved(boolean approved) {
+        isApproved = approved;
+    }
+
+    public void setIsApproved(boolean approved) {
+        isApproved = approved;
+    }
+
+    public boolean isOnboardingCompleted() {
+        return onboardingCompleted;
+    }
+
+    public boolean getOnboardingCompleted() {
+        return onboardingCompleted;
+    }
+
+    public void setOnboardingCompleted(boolean onboardingCompleted) {
+        this.onboardingCompleted = onboardingCompleted;
+    }
+
     public String getAuthProvider() {
         return authProvider;
     }
 
     public void setAuthProvider(String authProvider) {
         this.authProvider = authProvider;
+    }
+
+    public Boolean getIsNew() {
+        return isNew;
+    }
+
+    public void setIsNew(Boolean isNew) {
+        this.isNew = isNew;
     }
 
     public LocalDateTime getCreatedAt() {

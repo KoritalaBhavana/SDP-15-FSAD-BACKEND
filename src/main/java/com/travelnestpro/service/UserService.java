@@ -34,7 +34,11 @@ public class UserService {
         });
 
         String normalizedRole = normalizeRole(request.getRole());
-        String status = "TOURIST".equals(normalizedRole) ? "APPROVED" : "PENDING";
+        if ("ADMIN".equals(normalizedRole)) {
+            throw new BadRequestException("Admin accounts cannot be created from public registration.");
+        }
+        boolean approved = "TOURIST".equals(normalizedRole);
+        String status = approved ? "APPROVED" : "PENDING";
 
         User user = new User();
         user.setName(request.getName());
@@ -43,6 +47,10 @@ public class UserService {
         user.setRole(normalizedRole);
         user.setPhone(request.getPhone());
         user.setStatus(status);
+        user.setApproved(approved);
+        user.setOnboardingCompleted(true);
+        user.setIsNew(false);
+        user.setVerified(approved);
         user.setAuthProvider("LOCAL");
 
         return userRepository.save(user);
@@ -54,9 +62,6 @@ public class UserService {
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new BadRequestException("Invalid email or password");
-        }
-        if ("PENDING".equalsIgnoreCase(user.getStatus())) {
-            throw new BadRequestException("Your account is pending admin approval.");
         }
         if ("REJECTED".equalsIgnoreCase(user.getStatus())) {
             throw new BadRequestException("Your account was rejected by the admin.");
@@ -109,14 +114,39 @@ public class UserService {
     public List<User> getPendingUsers() {
         return userRepository.findAll().stream()
                 .filter(user -> !"TOURIST".equalsIgnoreCase(user.getRole()))
-                .filter(user -> "PENDING".equalsIgnoreCase(user.getStatus()))
+                .filter(user -> !user.getIsApproved())
                 .toList();
     }
 
     public User updateStatus(Long id, String status) {
         User user = getUserById(id);
-        user.setStatus(normalizeStatus(status));
+        String normalizedStatus = normalizeStatus(status);
+        user.setStatus(normalizedStatus);
+        boolean approved = "APPROVED".equalsIgnoreCase(normalizedStatus);
+        user.setApproved(approved);
+        user.setVerified(approved);
+        user.setIsNew(!approved);
         return userRepository.save(user);
+    }
+
+    public User verifyUser(Long id) {
+        return updateStatus(id, "APPROVED");
+    }
+
+    public User requestVerification(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + email));
+        user.setOnboardingCompleted(true);
+        user.setApproved(false);
+        user.setVerified(false);
+        user.setStatus("PENDING");
+        user.setIsNew(false);
+        return userRepository.save(user);
+    }
+
+    public void rejectUser(Long id) {
+        User user = getUserById(id);
+        userRepository.delete(user);
     }
 
     public Map<String, Long> getStats() {
@@ -127,7 +157,7 @@ public class UserService {
         stats.put("chefs", userRepository.countByRole("CHEF"));
         long pendingInterviews = userRepository.findAll().stream()
                 .filter(user -> ("HOST".equals(user.getRole()) || "GUIDE".equals(user.getRole()) || "CHEF".equals(user.getRole()))
-                        && "PENDING".equals(user.getStatus()))
+                        && !user.getIsApproved())
                 .count();
         stats.put("pendingInterviews", pendingInterviews);
         return stats;
@@ -139,8 +169,14 @@ public class UserService {
             user.setName(name);
             user.setEmail(email);
             user.setPassword(passwordEncoder.encode("GOOGLE_AUTH_" + email));
-            user.setRole(normalizeRole(role));
-            user.setStatus("TOURIST".equalsIgnoreCase(role) ? "APPROVED" : "PENDING");
+            String normalizedRole = normalizeRole(role);
+            boolean approved = "TOURIST".equals(normalizedRole);
+            user.setRole(normalizedRole);
+            user.setStatus(approved ? "APPROVED" : "PENDING");
+            user.setApproved(approved);
+            user.setOnboardingCompleted(true);
+            user.setVerified(approved);
+            user.setIsNew(false);
             user.setAuthProvider("GOOGLE");
             user.setProfileImage(picture);
             return userRepository.save(user);
@@ -155,6 +191,11 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(rawPassword));
             user.setRole(normalizeRole(role));
             user.setStatus(normalizeStatus(status));
+            boolean approved = "APPROVED".equalsIgnoreCase(status);
+            user.setApproved(approved);
+            user.setOnboardingCompleted(approved);
+            user.setVerified(approved);
+            user.setIsNew(!approved);
             user.setAuthProvider("LOCAL");
             return userRepository.save(user);
         });

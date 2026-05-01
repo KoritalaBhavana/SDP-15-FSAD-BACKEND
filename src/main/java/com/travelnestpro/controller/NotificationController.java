@@ -1,6 +1,8 @@
 package com.travelnestpro.controller;
 
 import com.travelnestpro.entity.Notification;
+import com.travelnestpro.entity.User;
+import com.travelnestpro.repository.UserRepository;
 import com.travelnestpro.service.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -9,6 +11,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -19,6 +23,19 @@ public class NotificationController {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Operation(summary = "Get notifications for authenticated user")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Success")})
+    @GetMapping
+    public ResponseEntity<List<Notification>> getCurrentUserNotifications(Authentication authentication) {
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Authenticated user not found"));
+        return ResponseEntity.ok(notificationService.getByUser(user.getId()));
+    }
 
     @Operation(summary = "Get notifications by user")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Success")})

@@ -38,8 +38,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Map<String, Object>> handleDataConflict(DataIntegrityViolationException ex) {
-        return buildError(HttpStatus.CONFLICT, "DATA_CONFLICT", "Data conflict or duplicate value", null);
+    public ResponseEntity<String> handleDataConflict(DataIntegrityViolationException ex) {
+        return ResponseEntity.badRequest().body("Duplicate value not allowed");
     }
 
     @ExceptionHandler(Exception.class)

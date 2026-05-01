@@ -9,13 +9,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/homestays")
+@RequestMapping({"/api/homestays", "/api/properties"})
 @Tag(name = "Homestays")
 public class HomestayController {
 
@@ -24,9 +27,45 @@ public class HomestayController {
 
     @Operation(summary = "Create homestay")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Created")})
-    @PostMapping
-    public ResponseEntity<Homestay> create(@Valid @RequestBody HomestayRequest request) {
-        return ResponseEntity.ok(homestayService.create(request));
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Homestay> create(@Valid @RequestBody HomestayRequest request, Authentication authentication) {
+        return ResponseEntity.ok(homestayService.create(request, authentication.getName()));
+    }
+
+    @Operation(summary = "Create homestay from form")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Created")})
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Homestay> createFromForm(
+            @RequestParam String title,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String state,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) java.math.BigDecimal pricePerNight,
+            @RequestParam(required = false) Integer maxGuests,
+            @RequestParam(required = false) String amenities,
+            @RequestParam(required = false) String imageUrl,
+            @RequestParam(required = false) String imageUrls,
+            @RequestParam(required = false) String distanceInfo,
+            @RequestParam(required = false) MultipartFile image,
+            Authentication authentication
+    ) {
+        return ResponseEntity.ok(homestayService.createFromForm(
+                title,
+                description,
+                location,
+                city,
+                state,
+                category,
+                pricePerNight,
+                maxGuests,
+                amenities,
+                imageUrl,
+                imageUrls,
+                distanceInfo,
+                authentication.getName()
+        ));
     }
 
     @Operation(summary = "Get all homestays")
@@ -40,7 +79,7 @@ public class HomestayController {
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Success")})
     @GetMapping("/{id}")
     public ResponseEntity<Homestay> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(homestayService.getById(id));
+        return ResponseEntity.ok(homestayService.getAvailableById(id));
     }
 
     @Operation(summary = "Get homestays by host")

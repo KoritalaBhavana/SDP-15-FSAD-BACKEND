@@ -37,6 +37,9 @@ public class Itinerary {
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "image_urls", columnDefinition = "TEXT")
+    private String imageUrls;
+
     public Itinerary() {
     }
 
@@ -54,6 +57,8 @@ public class Itinerary {
     public void setPlaces(String places) { this.places = places; }
     public BigDecimal getPrice() { return price; }
     public void setPrice(BigDecimal price) { this.price = price; }
+    public String getImageUrls() { return imageUrls; }
+    public void setImageUrls(String imageUrls) { this.imageUrls = imageUrls; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

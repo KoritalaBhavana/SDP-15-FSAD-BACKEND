@@ -58,6 +58,7 @@ public class DataSeeder {
                 manaliStay.setReviewCount(34);
                 manaliStay.setDistanceInfo("2.3 km from Mall Road");
                 manaliStay.setIsAvailable(true);
+                manaliStay.setIsApproved(true);
                 homestayRepository.save(manaliStay);
 
                 Homestay goaStay = new Homestay();
@@ -76,8 +77,24 @@ public class DataSeeder {
                 goaStay.setReviewCount(21);
                 goaStay.setDistanceInfo("300 m from Beach");
                 goaStay.setIsAvailable(true);
+                goaStay.setIsApproved(true);
                 homestayRepository.save(goaStay);
             }
+
+            homestayRepository.findAll().forEach(homestay -> {
+                boolean changed = false;
+                if (!Boolean.TRUE.equals(homestay.getIsApproved())) {
+                    homestay.setIsApproved(true);
+                    changed = true;
+                }
+                if (homestay.getIsAvailable() == null) {
+                    homestay.setIsAvailable(true);
+                    changed = true;
+                }
+                if (changed) {
+                    homestayRepository.save(homestay);
+                }
+            });
 
             Homestay sampleStay = homestayRepository.findAll().stream().findFirst().orElse(null);
             if (sampleStay != null && bookingRepository.count() == 0) {

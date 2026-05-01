@@ -43,6 +43,9 @@ public class Homestay {
     @Column(name = "image_url", length = 500)
     private String imageUrl;
 
+    @Column(name = "image_urls", columnDefinition = "TEXT")
+    private String imageUrls;
+
     private BigDecimal rating;
 
     @Column(name = "review_count")
@@ -53,6 +56,9 @@ public class Homestay {
 
     @Column(name = "is_available")
     private Boolean isAvailable;
+
+    @Column(name = "is_approved")
+    private Boolean isApproved;
 
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -84,6 +90,8 @@ public class Homestay {
     public void setAmenities(String amenities) { this.amenities = amenities; }
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public String getImageUrls() { return imageUrls; }
+    public void setImageUrls(String imageUrls) { this.imageUrls = imageUrls; }
     public BigDecimal getRating() { return rating; }
     public void setRating(BigDecimal rating) { this.rating = rating; }
     public Integer getReviewCount() { return reviewCount; }
@@ -92,6 +100,8 @@ public class Homestay {
     public void setDistanceInfo(String distanceInfo) { this.distanceInfo = distanceInfo; }
     public Boolean getIsAvailable() { return isAvailable; }
     public void setIsAvailable(Boolean isAvailable) { this.isAvailable = isAvailable; }
+    public Boolean getIsApproved() { return isApproved; }
+    public void setIsApproved(Boolean isApproved) { this.isApproved = isApproved; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

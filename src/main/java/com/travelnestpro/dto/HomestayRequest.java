@@ -1,14 +1,12 @@
 package com.travelnestpro.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 
 public class HomestayRequest {
 
-    @NotNull
     private Long hostId;
 
     @NotBlank
@@ -25,16 +23,15 @@ public class HomestayRequest {
     private String state;
     private String category;
 
-    @NotNull
     @Positive
     private BigDecimal pricePerNight;
 
-    @NotNull
     @Positive
     private Integer maxGuests;
 
     private String amenities;
     private String imageUrl;
+    private String imageUrls;
     private String distanceInfo;
 
     public Long getHostId() { return hostId; }
@@ -59,6 +56,8 @@ public class HomestayRequest {
     public void setAmenities(String amenities) { this.amenities = amenities; }
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public String getImageUrls() { return imageUrls; }
+    public void setImageUrls(String imageUrls) { this.imageUrls = imageUrls; }
     public String getDistanceInfo() { return distanceInfo; }
     public void setDistanceInfo(String distanceInfo) { this.distanceInfo = distanceInfo; }
 }

@@ -1,6 +1,7 @@
 package com.travelnestpro.config;
 
 import com.travelnestpro.security.JwtAuthenticationFilter;
+import com.travelnestpro.security.ApprovalGateFilter;
 import com.travelnestpro.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +28,9 @@ public class SecurityConfig {
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Autowired
+    private ApprovalGateFilter approvalGateFilter;
+
+    @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
     @Bean
@@ -44,17 +48,18 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/uploads/**"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/homestays/**", "/api/attractions/**", "/api/itineraries/**", "/api/reviews/**").permitAll()
-                        .requestMatchers("/api/users/pending", "/api/users/stats").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/homestays", "/api/homestays/**", "/api/properties", "/api/properties/**", "/api/attractions/**", "/api/itineraries/**", "/api/reviews/**").permitAll()
+                        .requestMatchers("/api/admin/**", "/api/users/pending", "/api/users/stats").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/users/*/status").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/homestays/**").hasAnyRole("HOST", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/homestays/**").hasAnyRole("HOST", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/homestays/**").hasAnyRole("HOST", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/homestays", "/api/homestays/**", "/api/properties", "/api/properties/**").hasAnyRole("HOST", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/homestays/**", "/api/properties/**").hasAnyRole("HOST", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/homestays/**", "/api/properties/**").hasAnyRole("HOST", "ADMIN")
                         .requestMatchers("/api/files/**", "/api/support/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(approvalGateFilter, JwtAuthenticationFilter.class);
 
         return http.build();
     }

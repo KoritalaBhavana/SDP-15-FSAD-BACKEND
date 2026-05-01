@@ -7,6 +7,10 @@ public record AuthResponse(
         String role,
         String profileImage,
         String status,
+        Boolean isVerified,
+        Boolean isApproved,
+        Boolean onboardingCompleted,
+        Boolean isNew,
         String token
 ) {
 }

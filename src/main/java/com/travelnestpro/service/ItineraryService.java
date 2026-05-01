@@ -23,6 +23,7 @@ public class ItineraryService {
         itinerary.setDurationDays(request.getDurationDays());
         itinerary.setPlaces(request.getPlaces());
         itinerary.setPrice(request.getPrice());
+        itinerary.setImageUrls(request.getImageUrls());
         return itineraryRepository.save(itinerary);
     }
 
@@ -42,6 +43,7 @@ public class ItineraryService {
         itinerary.setDurationDays(request.getDurationDays());
         itinerary.setPlaces(request.getPlaces());
         itinerary.setPrice(request.getPrice());
+        itinerary.setImageUrls(request.getImageUrls());
         return itineraryRepository.save(itinerary);
     }
 

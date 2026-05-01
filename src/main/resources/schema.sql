@@ -16,7 +16,11 @@ CREATE TABLE IF NOT EXISTS users (
   languages VARCHAR(200),
   price_per_day DECIMAL(10,2),
   status ENUM('PENDING','APPROVED','REJECTED') DEFAULT 'PENDING',
+  is_verified BOOLEAN DEFAULT FALSE,
+  is_approved BOOLEAN DEFAULT FALSE,
+  onboarding_completed BOOLEAN DEFAULT FALSE,
   auth_provider VARCHAR(20) DEFAULT 'LOCAL',
+  is_new BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -36,7 +40,9 @@ CREATE TABLE IF NOT EXISTS homestays (
   rating DECIMAL(3,2) DEFAULT 0,
   review_count INT DEFAULT 0,
   distance_info VARCHAR(200),
+  image_urls TEXT,
   is_available BOOLEAN DEFAULT TRUE,
+  is_approved BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (host_id) REFERENCES users(id)
 );
@@ -93,6 +99,7 @@ CREATE TABLE IF NOT EXISTS itineraries (
   duration_days INT,
   places TEXT,
   price DECIMAL(10,2),
+  image_urls TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (guide_id) REFERENCES users(id)
 );

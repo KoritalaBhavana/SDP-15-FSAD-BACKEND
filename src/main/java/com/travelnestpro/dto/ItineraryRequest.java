@@ -27,6 +27,8 @@ public class ItineraryRequest {
     @Positive
     private BigDecimal price;
 
+    private String imageUrls;
+
     public Long getGuideId() { return guideId; }
     public void setGuideId(Long guideId) { this.guideId = guideId; }
     public String getTitle() { return title; }
@@ -39,4 +41,6 @@ public class ItineraryRequest {
     public void setPlaces(String places) { this.places = places; }
     public BigDecimal getPrice() { return price; }
     public void setPrice(BigDecimal price) { this.price = price; }
+    public String getImageUrls() { return imageUrls; }
+    public void setImageUrls(String imageUrls) { this.imageUrls = imageUrls; }
 }

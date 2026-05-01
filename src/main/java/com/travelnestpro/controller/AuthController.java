@@ -62,7 +62,7 @@ public class AuthController {
     @PostMapping("/google")
     public ResponseEntity<AuthResponse> googleAuth(@Valid @RequestBody Map<String, String> payload) {
         String token = payload.get("token");
-        String role = payload.getOrDefault("role", "TOURIST");
+        String role = payload.getOrDefault("role", "HOST");
 
         if (token == null || token.isBlank()) {
             throw new BadRequestException("Google token is required");
@@ -98,6 +98,10 @@ public class AuthController {
                 user.getRole(),
                 user.getProfileImage(),
                 user.getStatus(),
+                user.getIsVerified(),
+                user.getIsApproved(),
+                user.getOnboardingCompleted(),
+                user.getIsNew(),
                 jwtService.generateToken(user.getEmail(), user.getRole(), user.getId())
         );
     }
