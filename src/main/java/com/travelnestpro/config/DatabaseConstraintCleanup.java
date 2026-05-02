@@ -6,6 +6,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 @Component
@@ -20,7 +22,20 @@ public class DatabaseConstraintCleanup implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        if (!isMySqlDatabase()) {
+            return;
+        }
+
         dropUnintendedUniqueTextIndexes();
+    }
+
+    private boolean isMySqlDatabase() {
+        try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
+            String databaseName = connection.getMetaData().getDatabaseProductName();
+            return databaseName != null && databaseName.toLowerCase().contains("mysql");
+        } catch (SQLException ex) {
+            return false;
+        }
     }
 
     private void dropUnintendedUniqueTextIndexes() {
